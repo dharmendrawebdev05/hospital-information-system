@@ -12,7 +12,7 @@ A Laravel-based Hospital Management System with modules:
 - Admin Dashboard
 
 ## Tech Stack
-- Laravel 10+
+- Laravel 13
 - MySQL
 - AdminLTE
 - Yajra DataTables
