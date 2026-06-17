@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -56,3 +57,30 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=======
+# Hospital Information System (HIS)
+
+A Laravel-based Hospital Management System with modules:
+
+- Patient Management
+- Appointment System
+- Doctor Management
+- IPD / OPD
+- Pharmacy Module
+- Lab & Radiology
+- Role & Permission (Spatie)
+- Admin Dashboard
+
+## Tech Stack
+- Laravel 13
+- MySQL
+- AdminLTE
+- Yajra DataTables
+- Spatie Permission
+
+## Features
+- Role-based access control
+- Token-based appointment system
+- Dynamic scheduling
+- Multi-role hospital workflow
+>>>>>>> c03e8bed22e66fc4603ae7624c3d8e7c11c5dca9
