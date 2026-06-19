@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Doctor;
+use App\Models\opdVisit;
 use Carbon\Carbon;
 use App\Models\DoctorSchedule;
 use App\Models\DoctorScheduleSession;
@@ -21,107 +22,109 @@ public function index(Request $request)
 if ($request->ajax()) {
 
 $appointments = Appointment::with([
-'patient',
-'doctor'
-
+    'patient',
+    'doctor',
+    'opdVisit'
 ])->latest();
 
 return DataTables::of($appointments)
 
 ->addIndexColumn()
 
+// ================= PATIENT =================
 ->addColumn('patient_name', function ($row) {
-return optional($row->patient)->patient_name;
+return optional($row->patient)->patient_name ?? '-';
 })
 
+// ================= DOCTOR =================
 ->addColumn('doctor_name', function ($row) {
-return optional($row->doctor)->doctor_name;
+return optional($row->doctor)->doctor_name ?? '-';
 })
 
+// ================= DATE =================
 ->addColumn('appointment_date', function ($row) {
-return Carbon::parse($row->appointment_date)
-->format('d M Y');
+return $row->appointment_date
+? Carbon::parse($row->appointment_date)->format('d M Y')
+: '-';
 })
 
+// ================= TIME =================
 ->addColumn('appointment_time', function ($row) {
-
-if (!$row->appointment_time) {
-return '-';
-}
-
-return Carbon::parse($row->appointment_time)
-->format('h:i A');
+return $row->appointment_time
+? Carbon::parse($row->appointment_time)->format('h:i A')
+: '-';
 })
 
+// ================= ACTION =================
 ->addColumn('action', function ($appointment) {
 
 $html = '';
 
-// OPD Status
-if ($appointment->opdVisit) {
+$today = now()->toDateString();
+
+$isToday = $appointment->appointment_date == $today;
+$isFuture = $appointment->appointment_date > $today;
+$isCheckedIn = $appointment->opdVisit()->exists();
+
+// ================= OPD STATUS =================
+if ($isCheckedIn) {
 
 $html .= '
 <button class="btn btn-secondary btn-sm" disabled>
 Checked-in
-</button>';
+</button> ';
+
+
+$html .= '<a href="'.route('opd.print-token', $appointment->opdVisit->id).'"
+class="btn btn-primary btn-sm print-token">
+        Print Token</a>';
 }
-elseif ($appointment->appointment_date == now()->toDateString()) {
+
+// ================= OPD CHECK-IN =================
+elseif ($isToday && auth()->user()->can('opd.checkin')) {
 
 $html .= '
-<a href="'.route(
-'opd.create.from.appointment',
-$appointment->id
-).'" class="btn btn-success btn-sm">
+<a  href="'.route('opd.create.from.appointment', $appointment->id).'"
+class="btn btn-success btn-sm opd-checkin">
 OPD Check-in
 </a>';
 }
-elseif ($appointment->appointment_date > now()->toDateString()) {
+
+// ================= FUTURE APPOINTMENT =================
+elseif ($isFuture) {
 
 $html .= '
 <button class="btn btn-warning btn-sm" disabled>
 Future Appointment
 </button>';
 }
-else {
 
-$html .= '';
-}
-
-// View
-
+// ================= VIEW =================
 if (auth()->user()->can('appointment.view')) {
+
 $html .= '
-<a href="'.route(
-'appointments.show',
-$appointment->id
-).'" class="btn btn-info btn-sm">
+<a href="'.route('appointments.show', $appointment->id).'"
+class="btn btn-info btn-sm">
 View
 </a>';
-
 }
 
-if (auth()->user()->can('appointment.edit')) {
-// Edit
+// ================= EDIT =================
+if (auth()->user()->can('appointment.edit') && !$isCheckedIn) {
+
 $html .= '
-<a href="'.route(
-'appointments.edit',
-$appointment->id
-).'"
+<a href="'.route('appointments.edit', $appointment->id).'"
 class="btn btn-warning btn-sm">
 Edit
 </a>';
-
 }
 
+// ================= DELETE =================
+if (auth()->user()->can('appointment.delete') && !$isCheckedIn) {
 
-if (auth()->user()->can('appointment.edit')) {
-// Delete
 $html .= '
 <form method="POST"
-action="'.route(
-'appointments.destroy',
-$appointment->id
-).'"
+action="'.route('appointments.destroy', $appointment->id).'"
 style="display:inline">
 
 '.csrf_field().'
@@ -133,15 +136,12 @@ Delete
 </button>
 
 </form>';
-
-
 }
 
 return $html;
 })
 
 ->rawColumns(['action'])
-
 ->make(true);
 }
 
@@ -215,6 +215,7 @@ $slots[] = [
 'time' => $time,
 'display' => $start->format('h:i A'),
 'available' => !in_array($time, $booked),
+'status' => in_array($time, $booked) ? 'booked' : 'available',
 ];
 
 $start->addMinutes($session->slot_duration);
@@ -333,15 +334,11 @@ return back()
 }
 
 // Same Patient Duplicate Check
-$patientExists = Appointment::where(
-'patient_id',
-$request->patient_id
-)
-->whereDate(
-'appointment_date',
-$request->appointment_date
-)
-->exists();
+$patientExists = Appointment::where([
+    ['patient_id', $request->patient_id],
+    ['doctor_id', $request->doctor_id],
+    ['appointment_date', $request->appointment_date],
+])->exists();
 
 if ($patientExists) {
 return back()
@@ -380,35 +377,33 @@ return back()
 ]);
 }
 
-// Token Number
-$tokenNo = Appointment::where(
-'doctor_id',
-$request->doctor_id
-)
-->whereDate(
-'appointment_date',
-$request->appointment_date
-)
-->max('token_no');
-
-$tokenNo = $tokenNo ? $tokenNo + 1 : 1;
-
 // Doctor Details
 $doctor = Doctor::findOrFail(
 $request->doctor_id
 );
 
+// Date part (18 June = 618)
+$datePart = now()->format('nj'); // month without leading zero + day
 
-$appointmentNo = 'APT-' .Carbon::parse($request->appointment_date)->format('Ymd')
-. '-' .
-str_replace(':', '', $request->appointment_time)
-. '-' .
-str_pad($tokenNo, 3, '0', STR_PAD_LEFT);
+// Aaj ka last appointment
+$lastAppointment = Appointment::whereDate('created_at', today())
+    ->orderByDesc('id')
+    ->first();
+
+$sequence = 1;
+
+if ($lastAppointment) {
+
+    // Last 3 digits extract karo
+    $sequence = (int) substr($lastAppointment->appointment_no, -3) + 1;
+}
+
+$appointmentNo = 'A' . $datePart . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+
 
 // Save Appointment
 Appointment::create([
 'appointment_no'   => $appointmentNo,	
-'token_no'         => $tokenNo,
 'patient_id'       => $request->patient_id,
 'doctor_id'        => $request->doctor_id,
 

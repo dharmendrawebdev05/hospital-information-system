@@ -7,22 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class RadiologyOrder extends Model
 {
 protected $fillable = [
-'patient_id',
 
-'opd_visit_id',
-'ipd_admission_id',
+'consultation_id',
 
 'doctor_id',
 
 'radiology_test_id',
 
-'order_date',
+'source',
+
+'instruction',
+
+'priority',
 
 'status',      // Ordered, Scheduled, Completed, Cancelled
 
-'report',
-
-'remarks',
 ];
 
 public function patient()

@@ -9,20 +9,20 @@ class ProcedureOrder extends Model
 
 
 protected $fillable = [
-'patient_id',
-'opd_visit_id',
-'ipd_admission_id',
-
-'doctor_id',
+'consultation_id',	
 
 'procedure_id',
 
-'order_date',
+'procedure_date',
+
+'procedure_time',
+
+'source',
 
 'status',      // Ordered, In Progress, Completed, Cancelled
 
-'remarks',
-'ordered_by',
+'remarks'
+
 ];
 
 

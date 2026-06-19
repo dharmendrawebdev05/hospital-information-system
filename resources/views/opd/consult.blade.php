@@ -173,35 +173,70 @@ Vitals
 
 <label>BP</label>
 
-<input type="text"
+<input type="number"
 name="bp"
 value="{{ old('bp') }}"
-class="form-control"
-placeholder="120/80">
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('bp') is-invalid @enderror">
+
+@error('bp')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
 
 </div>
 
-<div class="col-md-2">
 
-<label>Pulse</label>
-
-<input type="text"
-name="pulse"
-value="{{ old('pulse') }}"
-class="form-control"
-placeholder="72">
-
-</div>
 
 <div class="col-md-2">
 
 <label>Temp</label>
 
-<input type="text"
-name="temp"
-value="{{ old('temp') }}"
-class="form-control"
-placeholder="98.6">
+<input type="number"
+name="temperature"
+value="{{ old('temperature') }}"
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('temperature') is-invalid @enderror">
+
+@error('temperature')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+<label>Pulse</label>
+
+<input type="number"
+name="pulse"
+value="{{ old('pulse') }}"
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('pulse') is-invalid @enderror">
+
+@error('pulse')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
 
 </div>
 
@@ -209,11 +244,22 @@ placeholder="98.6">
 
 <label>Weight</label>
 
-<input type="text"
+<input type="number"
 name="weight"
-value="{{ old('weight') }}"
-class="form-control"
-placeholder="Kg">
+value="{{ old('temp') }}"
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('weight') is-invalid @enderror">
+
+@error('weight')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+
+
 
 </div>
 
@@ -221,11 +267,20 @@ placeholder="Kg">
 
 <label>Height</label>
 
-<input type="text"
+<input type="number"
 name="height"
-value="{{ old('height') }}"
-class="form-control"
-placeholder="Cm">
+value="{{ old('temp') }}"
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('height') is-invalid @enderror">
+
+@error('height')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
 
 </div>
 
@@ -233,11 +288,20 @@ placeholder="Cm">
 
 <label>SpO₂</label>
 
-<input type="text"
+<input type="number"
 name="spo2"
 value="{{ old('spo2') }}"
-class="form-control"
-placeholder="%">
+step="0.1"
+min="90"
+max="120"
+required
+class="form-control @error('spo2') is-invalid @enderror">
+
+@error('spo2')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
 
 </div>
 
@@ -680,14 +744,6 @@ Completed
 
 <option value="Followup">
 Follow-up
-</option>
-
-<option value="Admit">
-Admit To IPD
-</option>
-
-<option value="Referred">
-Referred
 </option>
 
 </select>

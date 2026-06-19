@@ -30,6 +30,8 @@ use App\Http\Controllers\RadiologyTestController;
 use App\Http\Controllers\DoctorScheduleSessionController;
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\DietController;
+use App\Http\Controllers\FollowupController;
+use App\Http\Controllers\DoctorDashboardController;
 
 
 Route::get('/', function () {
@@ -73,6 +75,9 @@ Route::get('opd/', [OpdVisitController::class, 'index'])
 // 🔄 Create from Appointment (Check-in)
 Route::get('opd/create-from-appointment/{id}', [OpdVisitController::class, 'createFromAppointment'])
 ->name('opd.create.from.appointment');
+
+Route::get('/opd/{visit}/print-token',[OpdVisitController::class, 'printToken']
+)->name('opd.print-token');
 
 // 👁️ Show single visit
 Route::get('opd/show/{id}', [OpdVisitController::class, 'show'])
@@ -280,6 +285,16 @@ Route::get('/print/opd/radiology/{id}', [PrintController::class, 'radiology'])->
 
 Route::get('/print/opd/procedure/{id}', [PrintController::class, 'procedure'])
 ->name('opd.procedure.print');
+
+Route::get('/followups', [FollowupController::class, 'index'])
+    ->name('followups.index');
+
+Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('doctor.dashboard');
+
+
+
 
 });
 

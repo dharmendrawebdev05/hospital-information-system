@@ -8,7 +8,6 @@ class Appointment extends Model
 {
     protected $fillable = [
     'appointment_no',
-    'token_no',
     'patient_id',
     'doctor_id',
     'appointment_date',
@@ -30,4 +29,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(Doctor::class);
     }
+
+       public function opdVisit()
+    {
+        return $this->hasOne(OpdVisit::class);
+    }
+    
 }

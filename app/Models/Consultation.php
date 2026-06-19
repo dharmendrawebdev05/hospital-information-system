@@ -6,46 +6,69 @@ use Illuminate\Database\Eloquent\Model;
 
 class Consultation extends Model
 {
-    protected $fillable = [
 
-        'patient_id',
-        'doctor_id',
-        'opd_visit_id',
-        'ipd_admission_id',
-        'source',
+protected $fillable = [
 
-        'chief_complaint',
-        'history',
-        'clinical_examination',
-        'diagnosis',
-        'advice',
+'patient_id',
+'doctor_id',
 
-        'followup_date',
-        'visit_status',
-    ];
+'opd_visit_id',
+'ipd_admission_id',
 
-    public function vitals()
-    {
-        return $this->hasOne(ConsultationVital::class);
-    }
+'source',
 
-    public function prescriptions()
-    {
-        return $this->hasMany(PatientPrescription::class);
-    }
+'chief_complaint',
+'history',
+'clinical_examination',
+'diagnosis',
+'advice',
 
-    public function procedures()
-    {
-        return $this->hasMany(PatientProcedure::class);
-    }
+'followup_date',
+'visit_status',
 
-    public function labOrders()
-    {
-        return $this->hasMany(PatientLabOrder::class);
-    }
+'progress_notes',
+];
 
-    public function radiologyOrders()
-    {
-        return $this->hasMany(PatientRadiologyOrder::class);
-    }
+
+public function vitals()
+{
+return $this->hasOne(ConsultationVital::class);
+}
+
+public function prescriptions()
+{
+return $this->hasMany(Prescription::class);
+}
+
+public function procedures()
+{
+return $this->hasMany(Procedure::class);
+}
+
+public function labOrders()
+{
+return $this->hasMany(LabOrder::class);
+}
+
+public function radiologyOrders()
+{
+return $this->hasMany(RadiologyOrder::class);
+}
+
+public function ProcedureOrders()
+{
+return $this->hasMany(ProcedureOrder::class);
+}
+
+public function vital()
+{
+    return $this->hasOne(ConsultationVital::class);
+}
+
+
+public function opdVisit()
+{
+    return $this->belongsTo(OpdVisit::class);
+}
+
 }

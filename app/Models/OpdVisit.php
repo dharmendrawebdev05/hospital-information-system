@@ -9,14 +9,16 @@ use App\Models\PharmacyBill;
 class OpdVisit extends Model
 {
     protected $fillable = [
-        'visit_no',
-        'appointment_id',
-        'patient_id',
-        'doctor_id',
-        'visit_date',
-        'status',
-        'notes'
-    ];
+    'appointment_id',
+    'patient_id',
+    'doctor_id',
+    'visit_no',
+    'visited_at',
+    'token_no',
+    'visit_type',
+    'status',
+    'notes',
+];
 
 public function patient()
 {

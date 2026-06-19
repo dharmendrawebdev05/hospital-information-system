@@ -12,13 +12,38 @@
 
 <div class="card-body">
 
+{{-- Validation Errors --}}
+@if($errors->any())
+<div class="alert alert-danger alert-dismissible fade show">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+
+<ul class="mb-0">
+@foreach($errors->all() as $error)
+<li>{{ $error }}</li>
+@endforeach
+</ul>
+
+</div>
+@endif
+
+{{-- Success Message --}}
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+{{ session('success') }}
+</div>
+@endif
+
+
+
+
 <table class="table table-bordered table-striped"
 id="opdTable">
 
 <thead>
 
 <tr>
-<th>#</th>
+<th>Token</th>
 <th>Visit No</th>
 <th>Patient</th>
 <th>Doctor</th>
@@ -36,9 +61,10 @@ id="opdTable">
 
 </div>
 
+
 @stop
 
-@push('js')
+@section('js')
 
 <script>
 
@@ -61,6 +87,7 @@ data: 'DT_RowIndex',
 searchable: false,
 orderable: false
 },
+
 
 {
 data: 'visit_no',
@@ -90,8 +117,9 @@ orderable: false
 ]
 });
 
+
 });
 
 </script>
 
-@endpush
+@stop

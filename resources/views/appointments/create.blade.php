@@ -158,185 +158,111 @@ margin-bottom:20px;
 
 function loadSlots()
 {
+let doctorId = $('#doctor_id').val();
+let date = $('#appointment_date').val();
 
-console.log("SLOTS URL:", "{{ route('appointments.slots') }}");
-
-let doctorId =
-$('#doctor_id').val();
-
-let date =
-$('#appointment_date').val();
-
-if (!doctorId || !date)
-{
-return;
-}
-
-
+if (!doctorId || !date) return;
 
 $.ajax({
-
-url:
-"{{ route('appointments.slots') }}",
-
-type:'GET',
+url: "{{ route('appointments.slots') }}",
+type: 'GET',
 dataType: 'json',
-data:{
-doctor_id:doctorId,
-appointment_date:date
+data: {
+doctor_id: doctorId,
+appointment_date: date
 },
 
-success:function(response)
-{
-
-console.log("SUCCESS:", response);
+success: function(response) {
 
 let html = '';
 
-if(response.length === 0)
-{
-html =
-`
+if (response.length === 0) {
+html = `
 <div class="alert alert-danger">
 Doctor is not available on selected date.
 </div>
 `;
-
-$('#slot-container')
-.html(html);
-
+$('#slot-container').html(html);
 return;
 }
 
-response.forEach(function(session)
-{
-html +=
-`
-<div class="card session-card">
+response.forEach(function(session) {
 
+html += `
+<div class="card session-card mb-3">
 <div class="card-header">
-
-<strong>
-${session.session_name}
-</strong>
-
-(${session.start_time}
--
-${session.end_time})
-
+<strong>${session.session_name}</strong>
+(${session.start_time} - ${session.end_time})
 </div>
 
 <div class="card-body">
 `;
 
-session.slots.forEach(function(slot)
-{
-if(slot.available)
-{
-html +=
-`
-<button
-type="button"
+session.slots.forEach(function(slot) {
+
+if (slot.status === 'booked') {
+html += `
+<button type="button"
+class="btn btn-danger slot-btn"
+disabled
+title="Already booked"
+style="pointer-events:none; opacity:0.7;">
+${slot.display}
+</button>
+`;
+} else {
+html += `
+<button type="button"
 class="btn btn-outline-success slot-btn"
 data-time="${slot.time}"
 data-session="${session.session_id}">
-
 ${slot.display}
-
 </button>
 `;
 }
-else
-{
-html +=
-`
-<button
-type="button"
-class="btn btn-danger slot-btn"
-disabled>
 
-${slot.display}
-
-</button>
-`;
-}
 });
 
-html +=
-`
+html += `
 </div>
-
 </div>
 `;
 });
 
-$('#slot-container')
-.html(html);
+$('#slot-container').html(html);
 },
 
 error: function(xhr) {
 console.log("AJAX ERROR:", xhr.responseText);
 }
-
-
-
 });
 }
 
-$('#doctor_id').change(function(){
+// triggers
+$('#doctor_id').change(loadSlots);
+$('#appointment_date').change(loadSlots);
 
-loadSlots();
-
-});
-
-$('#appointment_date').change(function(){
-
-loadSlots();
-
-});
-
-
-// Validation error ke baad auto reload
+// reload old values
 @if(old('doctor_id') && old('appointment_date'))
 loadSlots();
 @endif
 
+// SLOT CLICK HANDLER
+$(document).on('click', '.slot-btn', function() {
 
+if ($(this).prop('disabled')) return;
 
-$(document).on(
-'click',
-'.slot-btn',
-function()
-{
 $('.slot-btn')
-
 .removeClass('btn-success')
-
-.addClass(
-'btn-outline-success'
-);
+.addClass('btn-outline-success');
 
 $(this)
+.removeClass('btn-outline-success')
+.addClass('btn-success');
 
-.removeClass(
-'btn-outline-success'
-)
-
-.addClass(
-'btn-success'
-);
-
-$('#appointment_time')
-.val(
-$(this).data('time')
-);
-
-$('#doctor_schedule_session_id')
-.val(
-$(this).data('session')
-);
-}
-);
+$('#appointment_time').val($(this).data('time'));
+$('#doctor_schedule_session_id').val($(this).data('session'));
+});
 
 </script>
 

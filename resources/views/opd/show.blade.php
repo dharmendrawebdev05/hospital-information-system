@@ -8,15 +8,17 @@
 
 {{-- HEADER --}}
 <div class="card card-primary card-outline">
-<div class="card-header d-flex justify-content-between">
+<div class="card-header">	
+<div class="d-flex justify-content-between">
 <h3 class="card-title">
 <i class="fas fa-hospital-user"></i> OPD Visit Summary
 </h3>
 
 <div>
-<span class="badge badge-info p-2">
+<span class="badge badge-info p-2 pull-right">
 {{ $visit->status }}
 </span>
+</div>
 </div>
 </div>
 </div>
@@ -55,7 +57,11 @@
 <div class="card-header"><b>Visit Info</b></div>
 <div class="card-body">
 <p><strong>Visit No:</strong> {{ $visit->visit_no }}</p>
-<p><strong>Date:</strong> {{ \Carbon\Carbon::parse($visit->visit_date)->format('d M Y') }}</p>
+<p><strong>Appointment No:</strong>
+{{ $visit->appointment->appointment_no ?? '-' }}
+</p>
+<p><strong>Token No:</strong> {{ $visit->token_no }}</p>
+<p><strong>Date:</strong> {{ \Carbon\Carbon::parse($visit->visited_at)->format('d M Y') }}</p>
 </div>
 </div>
 </div>
@@ -233,6 +239,79 @@
 
 @endif
 
+
+{{-- PREVIOUS VISIT HISTORY --}}
+@if($previousVisits->count())
+
+<div class="card card-info card-outline mt-3">
+
+<div class="card-header">
+<b>Previous Visit History</b>
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table table-bordered table-sm">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Visit No</th>
+<th>Doctor</th>
+<th>Diagnosis</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+@foreach($previousVisits as $history)
+
+<tr>
+
+<td>
+{{ \Carbon\Carbon::parse($history->visited_at)->format('d M Y') }}
+</td>
+
+<td>
+{{ $history->visit_no }}
+</td>
+
+<td>
+{{ $history->doctor->doctor_name ?? '-' }}
+</td>
+
+<td>
+{{ optional($history->consultation)->diagnosis ?? '-' }}
+</td>
+
+<td>
+{{ $history->status }}
+</td>
+
+<td>
+<a href="{{ route('opd.show', $history->id) }}"
+class="btn btn-info btn-sm">
+View
+</a>
+</td>
+
+</tr>
+
+@endforeach
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+@endif
+
+
 {{-- ACTION BUTTONS --}}
 <div class="card mt-3 no-print">
 <div class="card-footer text-right">
@@ -246,33 +325,28 @@ class="btn btn-primary">
 <a href="{{ route('opd.prescription.print', $visit->id) }}"
 target="_blank"
 class="btn btn-success">
-<i class="fas fa-pills"></i> Prescription
+<i class="fas fa-pills"></i> Prescription Print
 </a>
 
 <a href="{{ route('opd.lab.print', $visit->id) }}"
 target="_blank"
 class="btn btn-warning">
-<i class="fas fa-flask"></i> Lab Slip
+<i class="fas fa-flask"></i> Lab Slip Print
 </a>
 
 <a href="{{ route('opd.radiology.print', $visit->id) }}"
 target="_blank"
 class="btn btn-danger">
-<i class="fas fa-x-ray"></i> Radiology
+<i class="fas fa-x-ray"></i> Radiology Print
 </a>
 
 <a href="{{ route('opd.procedure.print', $visit->id) }}"
 target="_blank"
 class="btn btn-secondary">
-<i class="fas fa-procedures"></i> Procedures
+<i class="fas fa-procedures"></i> Procedures Print
 </a>
 
-@if($visit->status == 'Completed')
-<a href="{{ route('ipd.admissions.create', $visit->id) }}"
-class="btn btn-dark">
-<i class="fas fa-bed"></i> Admit To IPD
-</a>
-@endif
+
 
 </div>
 </div>

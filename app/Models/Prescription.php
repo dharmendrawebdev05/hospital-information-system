@@ -10,23 +10,18 @@ class Prescription extends Model
 use HasFactory;
 
 protected $fillable = [
-'opd_visit_id',
-'ipd_admission_id',
+    'consultation_id',
+    'medicine_id',
 
-'patient_id',
-'doctor_id',
+    'dosage',
+    'route',
+    'frequency',
+    'days',
+    'quantity',
 
-'medicine_id',
+    'instruction',
 
-'dosage',
-'frequency',
-'duration',
-
-'instruction',
-
-'route',
-
-'status',
+    'status',
 ];
 
 
@@ -57,10 +52,6 @@ public function opdVisit()
 return $this->belongsTo(OpdVisit::class);
 }
 
-public function ipdAdmission()
-{
-return $this->belongsTo(IpdAdmission::class);
-}
 
 
 

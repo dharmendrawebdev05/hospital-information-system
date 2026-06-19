@@ -25,11 +25,24 @@ $visits = OpdVisit::with([
 'doctor',
 'appointment.patient',
 'appointment.doctor'
-])->latest();
+]);
+
+if(auth()->user()->hasRole('Doctor')) {
+
+$visits->where('doctor_id', auth()->user()->doctor->id);
+}
+$visits = $visits->latest();
+
 
 return DataTables::of($visits)
 
 ->addIndexColumn()
+
+
+->addColumn('token_no', function ($row) {
+return $row->token_no ?? '-';
+})
+
 
 ->addColumn('patient_name', function ($row) {
 return optional($row->patient)->patient_name ?? '-';
@@ -126,98 +139,87 @@ return view('opd.index');
 }
 
 
-// 🔄 CREATE FROM APPOINTMENT (MAIN FLOW)
-
-
 public function createFromAppointment($appointmentId)
 {
-$appointment = Appointment::with([
-'patient',
-'doctor'
-])->findOrFail($appointmentId);
+$appointment = Appointment::with(['patient','doctor'])
+->findOrFail($appointmentId);
 
-// Allow only on appointment date
-
+// ================= DATE CHECK =================
 if ($appointment->appointment_date != now()->toDateString()) {
-
-return redirect()
-->route('appointments.index')
-->with(
-'error',
-'OPD Check-In is allowed only on appointment date.'
-);
+return response()->json([
+'status' => false,
+'message' => 'OPD Check-In allowed only on appointment date.'
+]);
 }
 
-// Already checked-in ?
-
-$existingVisit = OpdVisit::where(
-'appointment_id',
-$appointment->id
-)->first();
+// ================= ALREADY CHECKED-IN =================
+$existingVisit = OpdVisit::where('appointment_id', $appointment->id)->first();
 
 if ($existingVisit) {
-
-return redirect()
-->route('opd.index')
-->with(
-'error',
-'Patient already checked-in.'
-);
+return response()->json([
+'status' => false,
+'message' => 'Patient already checked-in.'
+]);
 }
 
-// Create OPD Visit
+// ================= TOKEN GENERATION =================
+$tokenNo = OpdVisit::where('doctor_id', $appointment->doctor_id)
+->whereDate('visited_at', now()->toDateString())
+->max('token_no');
 
+$tokenNo = $tokenNo ? $tokenNo + 1 : 1;
+
+// ================= CREATE OPD VISIT =================
 $visit = OpdVisit::create([
+'visit_no' => 'OPD' . date('Ymd') . str_pad(OpdVisit::count() + 1, 4, '0', STR_PAD_LEFT),
 
-'visit_no' =>
-'OPD' .
-date('Ymd') .
-str_pad(
-OpdVisit::count() + 1,
-4,
-'0',
-STR_PAD_LEFT
-),
+'appointment_id' => $appointment->id,
+'patient_id'     => $appointment->patient_id,
+'doctor_id'      => $appointment->doctor_id,
 
-'appointment_id' =>
-$appointment->id,
-
-'patient_id' =>
-$appointment->patient_id,
-
-'doctor_id' =>
-$appointment->doctor_id,
-
-// Important
-
-'visit_date' =>
-$appointment->appointment_date,
-
-'status' =>
-'In Queue',
-
-'notes' =>
-null,
-
+'token_no'       => $tokenNo,
+'visited_at'     => now(),
+'status'         => 'In Queue',
+'notes'          => null,
 ]);
 
-// Appointment Status Update
-
+// ================= UPDATE APPOINTMENT =================
 $appointment->update([
-
 'status' => 'Checked In'
-
 ]);
 
-return redirect()
-->route('opd.index')
-->with(
-'success',
-'OPD Check-In completed successfully.'
-);
+// ================= RESPONSE =================
+return response()->json([
+'status' => true,
+'message' => 'OPD Check-In successful',
+'data' => [
+'token_no' => $tokenNo,
+'visit_no' => $visit->visit_no,
+'patient'  => $appointment->patient->patient_name,
+'doctor'   => $appointment->doctor->doctor_name,
+]
+]);
 }
 
 
+public function printToken($visitId)
+{
+$visit = OpdVisit::with([
+'patient',
+'doctor',
+'appointment'
+])->findOrFail($visitId);
+
+return response()->json([
+'status' => true,
+'data' => [
+'token_no' => $visit->token_no,
+'visit_no' => $visit->visit_no,
+'patient'  => optional($visit->patient)->patient_name,
+'doctor'   => optional($visit->doctor)->doctor_name,
+]
+]);
+}
 
 
 
@@ -284,10 +286,26 @@ $visit = OpdVisit::with([
 'patient',
 'doctor',
 'consultation.prescriptions.medicine',
-'consultation.labOrders.test'
+'consultation.labOrders.labTest'
 ])->findOrFail($id);
 
-return view('opd.show', compact('visit'));
+
+$previousVisits = OpdVisit::with([
+    'doctor',
+    'consultation'
+])
+->where('patient_id', $visit->patient_id)
+->where('id', '!=', $visit->id)
+->whereIn('status', [
+    'Completed',
+    'Followup'
+    
+])
+->latest('visited_at')
+->get();
+
+
+return view('opd.show', compact('visit', 'previousVisits'));
 }
 
 

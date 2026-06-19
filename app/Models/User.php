@@ -47,8 +47,10 @@ class User extends Authenticatable
     return route('profile.edit');
         }
 
-
-
+    public function doctor()
+    {
+    return $this->hasOne(Doctor::class);
+    }    
 
 
 

@@ -298,39 +298,65 @@ return [
 |
 */
 
-
 'menu' => [
 
 // ================= DASHBOARD =================
+
+
 [
-'text' => 'Dashboard',
-'url'  => '/dashboard',
-'icon' => 'fas fa-tachometer-alt',
-'can'  => 'dashboard.view',
-],
+        'key'  => 'superadmin_dashboard',
+        'text' => 'Dashboard',
+        'url'  => '/dashboard',
+        'icon' => 'fas fa-tachometer-alt',
+        'can'  => ['superadmin-menu'],
+    ],
+
+    // ADMIN DASHBOARD
+    [
+        'key'  => 'admin_dashboard',
+        'text' => 'Dashboard',
+        'url'  => '/dashboard',
+        'icon' => 'fas fa-tachometer-alt',
+        'can'  => ['admin-menu'],
+    ],
+
+    // DOCTOR DASHBOARD
+    [
+        'key'  => 'doctor_dashboard',
+        'text' => 'Dashboard',
+        'url'  => '/doctor/dashboard', // Fixed URL
+        'icon' => 'fas fa-tachometer-alt',
+        'can'  => ['doctor-menu'],
+    ],
+
+    // NURSE DASHBOARD
+    [
+        'key'  => 'nurse_dashboard',
+        'text' => 'Dashboard',
+        'url'  => '/nurse/dashboard', // Fixed URL
+        'icon' => 'fas fa-tachometer-alt',
+        'can'  => ['nurse-menu'],
+    ],
+
+
 
 
 // ================= MASTER DATA =================
 [
 'header' => 'MASTER DATA',
-'can'	 =>	'masterdata.view'		
+'can'    => 'masterdata.view'
 ],
 
 [
 'text' => 'Hospital Masters',
 'icon' => 'fas fa-database',
 'submenu' => [
+
 [
 'text' => 'Departments',
 'url'  => '/departments',
 'icon' => 'fas fa-building',
 'can'  => 'department.view',
-],
-[
-'text' => 'Service Master',
-'url'  => '/service-masters',
-'icon' => 'fas fa-cubes',
-'can'  => 'service.view',
 ],
 [
 'text' => 'Medicines',
@@ -345,7 +371,7 @@ return [
 'can'  => 'lab.view',
 ],
 [
-'text' => 'Radiology Master',
+'text' => 'Radiology Tests',
 'url'  => '/radiology-tests',
 'icon' => 'fas fa-x-ray',
 'can'  => 'radiology.view',
@@ -356,42 +382,22 @@ return [
 'icon' => 'fas fa-notes-medical',
 'can'  => 'procedure.view',
 ],
-[
-'text' => 'Diet Master',
-'url'  => '/diets',
-'icon' => 'fas fa-utensils',
-'can'  => 'diet.view',
-],
-
-[
-'text' => 'Ward Master',
-'url'  => '/wards',
-'icon' => 'fas fa-hospital',
-'can'  => 'ward.view',
-],
-[
-'text' => 'Bed Master',
-'url'  => '/beds',
-'icon' => 'fas fa-procedures',
-'can'  => 'bed.view',
-],
 
 ],
 ],
-
-
 
 
 // ================= FRONT DESK =================
 [
 'header' => 'FRONT DESK',
-'can'	 =>	'frontdesk.view'	
+'can'    => 'frontdesk.view'
 ],
 
 [
 'text' => 'Patient Management',
 'icon' => 'fas fa-user-injured',
 'submenu' => [
+
 [
 'text' => 'Patient Registration',
 'url'  => '/patients/create',
@@ -404,6 +410,7 @@ return [
 'icon' => 'fas fa-list',
 'can'  => 'patient.view',
 ],
+
 ],
 ],
 
@@ -411,6 +418,7 @@ return [
 'text' => 'Appointment',
 'icon' => 'fas fa-calendar-check',
 'submenu' => [
+
 [
 'text' => 'New Appointment',
 'url'  => '/appointments/create',
@@ -423,19 +431,30 @@ return [
 'icon' => 'fas fa-list',
 'can'  => 'appointment.view',
 ],
+
+[
+'text' => 'Follow-up Patients',
+'url'  => '/followups',
+'icon' => 'fas fa-calendar-check',
+'can'  => 'followup.view',
+],
+
+
 ],
 ],
+
 
 // ================= CLINICAL =================
 [
 'header' => 'CLINICAL',
-'can'	 =>	'clinical.view'	
+'can'    => 'clinical.view'
 ],
 
 [
 'text' => 'Doctors',
 'icon' => 'fas fa-user-md',
 'submenu' => [
+
 [
 'text' => 'Doctor Master',
 'url'  => '/doctors',
@@ -448,6 +467,7 @@ return [
 'icon' => 'fas fa-calendar-alt',
 'can'  => 'doctor_schedule.view',
 ],
+
 ],
 ],
 
@@ -462,144 +482,44 @@ return [
 'icon' => 'fas fa-list',
 'can'  => 'opd.view',
 ],
+
 ],
 ],
 
-[
-'text' => 'IPD',
-'icon' => 'fas fa-procedures',
-'submenu' => [
 
-[
-'text' => 'In Patients',
-'url'  => '/ipd/admissions',
-'icon' => 'fas fa-hospital-user',
-'can'  => 'ipd_admission.view',
-],
-[
-'text' => 'Doctor Orders',
-'url'  => '/ipd/orders',
-'icon' => 'fas fa-clipboard-list',
-'can'  => 'doctor_order.view',
-],
-[
-'text' => 'Doctor Rounds',
-'url'  => '/ipd-rounds',
-'icon' => 'fas fa-user-md',
-'can'  => 'doctor_round.view',
-],
-[
-'text' => 'Nursing Notes',
-'url'  => '/nursing-notes',
-'icon' => 'fas fa-notes-medical',
-'can'  => 'nursing_note.view',
-],
-[
-'text' => 'Medications',
-'url'  => '/ipd/medications',
-'icon' => 'fas fa-syringe',
-'can'  => 'ipd_medication.view',
-],
-[
-'text' => 'Discharge',
-'url'  => '/ipd/discharge',
-'icon' => 'fas fa-sign-out-alt',
-'can'  => 'discharge.view',
-],
-],
-],
-
-// ================= PHARMACY =================
-[
-'header' => 'PHARMACY',
-'can'	 =>	'pharmacy.view'	
-],
-
-[
-'text' => 'Pharmacy',
-'icon' => 'fas fa-pills',
-'submenu' => [
-[
-'text' => 'Queue',
-'url'  => '/pharmacy-queue',
-'icon' => 'fas fa-list',
-'can'  => 'pharmacy-queue.view',
-],
-[
-'text' => 'Bills',
-'url'  => '/pharmacy-bills',
-'icon' => 'fas fa-file-invoice',
-'can'  => 'pharmacy-bill.view',
-],
-],
-],
-
-// ================= LAB =================
+// ================= LABORATORY =================
 [
 'header' => 'LABORATORY',
-'can'	 =>	'laboratory.view'	
+'can'    => 'laboratory.view'
 ],
 
 [
 'text' => 'Laboratory',
 'icon' => 'fas fa-flask',
 'submenu' => [
+
 [
 'text' => 'Lab Orders',
 'url'  => '/lab-orders',
 'icon' => 'fas fa-vial',
 'can'  => 'lab-order.view',
 ],
-[
-'text' => 'Reports',
-'url'  => '/lab-reports',
-'icon' => 'fas fa-file-medical',
-'can'  => 'lab-report.view',
-],
+
 ],
 ],
 
-// ================= BILLING =================
-[
-'header' => 'BILLING',
-'can'	 =>	'billing.view'	
-],
 
-[
-'text' => 'IPD Billing',
-'icon' => 'fas fa-file-invoice-dollar',
-'submenu' => [
-[
-'text' => 'IPD Bills',
-'url'  => '/ipd/bills',
-'icon' => 'fas fa-file-invoice',
-'can'  => 'ipd.view',
-],
-[
-'text' => 'Generate Bill',
-'url'  => '/ipd/bills/create',
-'icon' => 'fas fa-plus-circle',
-'can'  => 'bill.view',
-],
-[
-'text' => 'Payments',
-'url'  => '/payments',
-'icon' => 'fas fa-cash-register',
-'can'  => 'payment.view',
-],
-],
-],
-
-// ================= ADMIN =================
+// ================= ADMINISTRATION =================
 [
 'header' => 'ADMINISTRATION',
-'can'	 =>	'administration.view'	
+'can'    => 'administration.view'
 ],
 
 [
 'text' => 'User Management',
 'icon' => 'fas fa-users-cog',
 'submenu' => [
+
 [
 'text' => 'Users',
 'url'  => '/users',
@@ -616,27 +536,41 @@ return [
 ],
 ],
 
+
 // ================= REPORTS =================
 [
 'header' => 'REPORTS',
-'can'	 =>	'report.view'	
+'can'    => 'report.view'
 ],
 
 [
 'text' => 'Reports',
 'icon' => 'fas fa-chart-bar',
 'submenu' => [
+
 [
-'text' => 'Daily Collection',
-'url'  => '/reports/daily-collection',
-'icon' => 'fas fa-rupee-sign',
-'can'  => 'report.daily_collection.view',
+'text' => 'Patient Summary',
+'url'  => '/reports/patient-summary',
+'icon' => 'fas fa-file-medical',
+'can'  => 'report.patient_summary.view',
 ],
 [
-'text' => 'Patient Report',
-'url'  => '/reports/patients',
-'icon' => 'fas fa-user-injured',
-'can'  => 'report.patient.view',
+'text' => 'OPD Visit Report',
+'url'  => '/reports/opd-visits',
+'icon' => 'fas fa-stethoscope',
+'can'  => 'report.opd_visit.view',
+],
+[
+'text' => 'Prescription Report',
+'url'  => '/reports/prescriptions',
+'icon' => 'fas fa-prescription-bottle-alt',
+'can'  => 'report.prescription.view',
+],
+[
+'text' => 'Lab Report',
+'url'  => '/reports/lab',
+'icon' => 'fas fa-vial',
+'can'  => 'report.lab.view',
 ],
 [
 'text' => 'Appointment Report',
@@ -644,13 +578,33 @@ return [
 'icon' => 'fas fa-calendar',
 'can'  => 'report.appointment.view',
 ],
+[
+'text' => 'Follow-up Report',
+'url'  => '/reports/followups',
+'icon' => 'fas fa-calendar-check',
+'can'  => 'report.followup.view',
+],
+[
+'text' => 'Daily Collection',
+'url'  => '/reports/daily-collection',
+'icon' => 'fas fa-rupee-sign',
+'can'  => 'report.daily_collection.view',
+],
+[
+'text' => 'Doctor Performance',
+'url'  => '/reports/doctor-performance',
+'icon' => 'fas fa-user-md',
+'can'  => 'report.doctor_performance.view',
+],
+
 ],
 ],
+
 
 // ================= SETTINGS =================
 [
 'header' => 'SETTINGS',
-'can'	 =>	'setting.view'	
+'can'    => 'setting.view'
 ],
 
 [
@@ -659,13 +613,8 @@ return [
 'icon' => 'fas fa-cogs',
 'can'  => 'settings.view',
 ],
+
 ],
-
-
-
-
-
-
 
 
 /*

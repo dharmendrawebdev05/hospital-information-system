@@ -62,14 +62,7 @@ class="img-circle elevation-2 mb-3">
 <p>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}</p>
 </div>
 
-<div class="col-md-6 mb-3">
-<strong>Token No</strong>
-<p>
-<span class="badge badge-primary">
-#{{ $appointment->token_no }}
-</span>
-</p>
-</div>
+
 
 <div class="col-md-6 mb-3">
 <strong>Consultation Fee</strong>

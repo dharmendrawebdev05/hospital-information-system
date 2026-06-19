@@ -34,8 +34,8 @@ id="doctorTable">
 
 <tr>
 <th>#</th>
-<th>Code</th>
 <th>Name</th>
+<th>Email ID</th>
 <th>Department</th>
 <th>Mobile</th>
 <th>Fee</th>
@@ -76,13 +76,13 @@ searchable: false
 },
 
 {
-data: 'doctor_code',
-name: 'doctor_code'
+data: 'doctor_name',
+name: 'doctor_name'
 },
 
 {
-data: 'doctor_name',
-name: 'doctor_name'
+data: 'email',
+name: 'email'
 },
 
 {

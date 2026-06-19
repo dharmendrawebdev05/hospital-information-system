@@ -16,15 +16,6 @@ Schema::create('prescriptions', function (Blueprint $table) {
 
 $table->id();
 
-$table->foreignId('patient_id')
-->constrained()
-->cascadeOnDelete();
-
-$table->foreignId('doctor_id')
-->nullable()
-->constrained()
-->nullOnDelete();
-
 $table->foreignId('consultation_id')
 ->constrained()
 ->cascadeOnDelete();

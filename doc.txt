@@ -1,0 +1,30 @@
+Receptionist ka main kaam (standard workflow)
+
+1. Patient Registration
+
+New patient create karna
+UHID / Patient ID generate karna
+Basic details + contact info save karna
+
+2. Appointment Booking
+
+Doctor schedule ke hisaab se slot book karna
+Follow-up appointments manage karna
+Waiting list handle karna
+
+3. OPD Check-in
+
+Patient ko arrival mark karna
+Token / queue number dena (agar system ho)
+
+4. Billing Entry (many hospitals)
+
+OPD registration fee
+consultation fee collect/record
+receipts generate karna
+
+
+✔️ Doctor module:
+Diagnosis
+Prescription
+Lab / Radiology / Procedure Orders
